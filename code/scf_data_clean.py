@@ -13,6 +13,9 @@ Documentation links:
 REMINDERS:
 
     * quantiles must be calculated here (before any conditioning by debt).
+    i.e. when we plot things like average debt among debtors per quintile of
+    the distribution of net worth, these are not quintiles of the debtor population
+    but rather quintiles of the whole population.
 
 In the Summary macros, "married" includes "living with partner":
 """
@@ -21,9 +24,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import time, datetime, pyreadstat, sys
+import os
 from io import BytesIO
 from zipfile import ZipFile
 from urllib.request import urlopen
+"""
+Make folder for figures if none exists
+"""
+if not os.path.exists('../figures'):
+    os.makedirs('../figures')
 """
 Download data, list variables to keep, and join full public and summary dataset
 """
@@ -62,6 +71,7 @@ c1,c2='lightsteelblue','darkblue'
 def colorFader(c1,c2,mix):
     return mpl.colors.to_hex((1-mix)*np.array(mpl.colors.to_rgb(c1)) + mix*np.array(mpl.colors.to_rgb(c2)))
 
+#weighted quantile function
 def quantile(data, weights, quantile):
     if not isinstance(data, np.matrix):
         data = np.asarray(data)
@@ -71,8 +81,6 @@ def quantile(data, weights, quantile):
     sorted_weights = weights[ind_sorted]
     Sn = np.cumsum(sorted_weights)
     Pn = Sn/Sn[-1] #alternative: Pn = (Sn-0.5*sorted_weights)/Sn[-1]
-    #interp(x, xdata, ydata)
-    #Pn in following is yaxis of CDF. Get the right picture in there.
     return np.interp(quantile, Pn, data[ind_sorted])
 slice_fun = {}
 slice_fun['Borrowers'] = lambda df: df[df['percap_all_loans']>0]
