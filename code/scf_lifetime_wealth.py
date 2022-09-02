@@ -100,7 +100,7 @@ def lifetime_wealth_SD(df,g,rf,end_date,num,num_age,show=0):
     ax.set_ylabel('\$000s')
     ax.legend(loc='upper left')
     plt.ylim([0,45])
-    destin = '../figures/SD{0}lifetime_wealth{1}{2}.eps'.format(qctile_dict[num],int(100*g),int(100*rf))
+    destin = '../main/figures/SD{0}lifetime_wealth{1}{2}.eps'.format(qctile_dict[num],int(100*g),int(100*rf))
     plt.savefig(destin, format='eps', dpi=1000)
     if show == 1:
         plt.show()
@@ -136,7 +136,7 @@ def lifetime_wealth_SD(df,g,rf,end_date,num,num_age,show=0):
         ax.set_ylabel('\$000s')
         ax.legend(loc='upper left')
         plt.ylim([0,45])
-        destin = '../figures/SD{0}lifetime_wealth{1}{2}{3}.eps'.format(qctile_dict[num],int(100*g),int(100*rf),age_cat)
+        destin = '../main/figures/SD{0}lifetime_wealth{1}{2}{3}.eps'.format(qctile_dict[num],int(100*g),int(100*rf),age_cat)
         plt.savefig(destin, format='eps', dpi=1000)
         if show == 1:
             plt.show()
@@ -167,7 +167,7 @@ def lifetime_wealth_debt_count(df,g,rf,end_date,num,num_age,show=0):
     ax.set_title('Fraction of population')
     ax.legend()
     ax.set_ylim([0, 1])
-    destin = '../figures/lifetime_wealth_debt_count{0}{1}.eps'.format(int(100*g),int(100*rf))
+    destin = '../main/figures/lifetime_wealth_debt_count{0}{1}.eps'.format(int(100*g),int(100*rf))
     plt.savefig(destin, format='eps', dpi=1000)
     if show == 1:
         plt.show()
@@ -197,7 +197,7 @@ def lifetime_wealth_debt_count(df,g,rf,end_date,num,num_age,show=0):
         ax.set_title('Fraction of population')
         ax.legend()
         ax.set_ylim([0, 1])
-        destin = '../figures/lifetime_wealth_debt_count{0}{1}{2}.eps'.format(int(100*g),int(100*rf),age_cat)
+        destin = '../main/figures/lifetime_wealth_debt_count{0}{1}{2}.eps'.format(int(100*g),int(100*rf),age_cat)
         plt.savefig(destin, format='eps', dpi=1000)
         if show == 1:
             plt.show()
@@ -218,7 +218,7 @@ def cancellation_lifetime_wealth(df,g,rf,end_date,num,num_age,show=0):
         ax.set_xlabel('Per-capita lifetime wealth {0}s ($r = ${1}%)'.format(qctile_dict[num],int(100*rf)))
         ax.set_ylabel('\$')
         ax.set_title('Up to \${0},000 forgiven'.format(int(cancel/10**3)))
-        destin = '../figures/cancellifetime_wealth{0}{1}{2}{3}.eps'.format(qctile_dict[num],cancel,int(100*g),int(100*rf))
+        destin = '../main/figures/cancellifetime_wealth{0}{1}{2}{3}.eps'.format(qctile_dict[num],cancel,int(100*g),int(100*rf))
         plt.savefig(destin, format='eps', dpi=1000)
         if show == 1:
             plt.show()
@@ -238,7 +238,7 @@ def cancellation_lifetime_wealth(df,g,rf,end_date,num,num_age,show=0):
             ax.set_xlabel('Per-capita lifetime wealth {0}s for {1} year olds'.format(qctile_dict[num],age_labels[age_cat]))
             ax.set_ylabel('\$000s')
             ax.set_title('Per-capita cancellation benefits')
-            destin = '../figures/cancellifetime_wealth{0}{1}{2}{3}{4}.eps'.format(qctile_dict[num],cancel,int(100*g),int(100*rf),age_cat)
+            destin = '../main/figures/cancellifetime_wealth{0}{1}{2}{3}{4}.eps'.format(qctile_dict[num],cancel,int(100*g),int(100*rf),age_cat)
             plt.savefig(destin, format='eps', dpi=1000)
             if show == 1:
                 plt.show()

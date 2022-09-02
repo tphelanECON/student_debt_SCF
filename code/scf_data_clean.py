@@ -17,31 +17,33 @@ REMINDERS:
     the distribution of net worth, these are not quintiles of the debtor population
     but rather quintiles of the whole population.
 
-In the Summary macros, "married" includes "living with partner":
+In the Summary macros, "married" includes "living with partner".
 """
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import time, datetime, pyreadstat, sys
-import os
+import time, datetime, pyreadstat, sys, os
 from io import BytesIO
 from zipfile import ZipFile
+import requests, zipfile
 from urllib.request import urlopen
 """
 Make folder for figures if none exists
 """
-if not os.path.exists('../figures'):
-    os.makedirs('../figures')
+if not os.path.exists('../main/figures'):
+    os.makedirs('../main/figures')
+
+if not os.path.exists('../data'):
+    os.makedirs('../data')
 """
 Download data, list variables to keep, and join full public and summary dataset
 """
 def data_from_url(url):
-    with urlopen(url) as request:
-        data = BytesIO(request.read())
-    with ZipFile(data) as archive:
-        with archive.open(archive.namelist()[0]) as stata:
-            return pd.read_stata(stata)
+    r = requests.get(url, stream=True)
+    z = zipfile.ZipFile(BytesIO(r.content))
+    z.extractall('../data/')
+    return pd.read_stata('../data/{0}'.format(z.namelist()[0]))
 
 tic = time.time()
 url = 'https://www.federalreserve.gov/econres/files/scfp2019s.zip'
@@ -94,6 +96,12 @@ whom_list = ['x7978', 'x7883', 'x7888', 'x7893', 'x7898', 'x7993']
 #How much is still owed on this loan? 0=NA/Inappropriate, otherwise dollar amount
 bal_list = ['x7824', 'x7847', 'x7870', 'x7924', 'x7947', 'x7970']
 """
+Following suppresses a Python warning
+(taken from https://github.com/twopirllc/pandas-ta/issues/340)
+"""
+from warnings import simplefilter
+simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
+"""
 Loans (parent and grandparent absorbed into "parent" category) and categorical age variable
 """
 for i in range(6):
@@ -112,7 +120,7 @@ age_values = [25,30,35,40,45,50,55,60]
 data['age_cat'] = pd.cut(data['age'],bins=age_values,labels=range(len(age_values)-1))
 """
 Deciles and quintiles for networth and income for whole population and by age.
-Sometimes need duplicates='drop' as argument of pd.cut if qctiles not unique.
+Sometimes need duplicates='drop' as argumhent of pd.cut if qctiles not unique.
 """
 for var in ["income", "networth"]:
     for num in [10,5]:
@@ -121,6 +129,7 @@ for var in ["income", "networth"]:
         data[var+'_cat{0}'.format(num)] = pd.cut(data[var], bins=qctiles, labels=range(len(qctiles)-1))
         qctiles = np.array([quantile(data['percap_'+var], data['wgt'], j/num) for j in range(num+1)])
         data['percap_'+var+'_cat{0}'.format(num)] = pd.cut(data['percap_'+var], bins=qctiles, labels=range(len(qctiles)-1))
+        #ae-specific quantiles
         for age_cat in range(len(age_labels)):
             data_temp = data[data['age_cat']==age_cat]
             qctiles = np.array([quantile(data_temp[var], data_temp['wgt'], j/num) for j in range(num+1)])

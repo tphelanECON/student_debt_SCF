@@ -45,7 +45,7 @@ for var in ['income','networth']:
     ax.set_title('Per-capita {0} percentiles'.format(var_list_dict[var]))
     ax.set_ylabel('\$000s')
     ax.legend()
-    destin = '../figures/BvsNB{0}.eps'.format(var)
+    destin = '../main/figures/BvsNB{0}.eps'.format(var)
     plt.savefig(destin, format='eps', dpi=1000)
     plt.show()
 """
@@ -85,7 +85,7 @@ for var in var_list:
     ax.set_title('Average student debt')
     ax.set_ylabel('\$000s')
     ax.legend()
-    destin = '../figures/SD{0}{1}.eps'.format(qctile_dict[num],var)
+    destin = '../main/figures/SD{0}{1}.eps'.format(qctile_dict[num],var)
     plt.savefig(destin, format='eps', dpi=1000)
     plt.show()
 """
@@ -110,13 +110,13 @@ plt.xticks(range(len(scf_data_clean.age_labels)), scf_data_clean.age_labels)
 ax.set_xlabel('Age')
 ax.set_title('Population share (%)')
 ax.legend()
-destin = '../figures/BvsNBageFIG.eps'
+destin = '../main/figures/BvsNBageFIG.eps'
 plt.savefig(destin, format='eps', dpi=1000)
 plt.show()
 DF = pd.DataFrame(array_temp.round(decimals=1),index=scf_data_clean.age_labels, columns=["Borrowers","All"])
-destin = '../figures/BvsNBage.tex'
+destin = '../main/figures/BvsNBage.tex'
 with open(destin,'w') as tf:
-    tf.write(DF.to_latex(column_format='lcc'))
+    tf.write(DF.style.to_latex(column_format='lcc'))
 """
 Aggregate debt by age group.
 """
@@ -131,7 +131,7 @@ plt.xticks(range(len(scf_data_clean.age_labels)), scf_data_clean.age_labels)
 ax.set_xlabel('Age')
 ax.set_title('Aggregate debt held')
 ax.set_ylabel('\$b')
-destin = '../figures/BvsNBageAGG.eps'
+destin = '../main/figures/BvsNBageAGG.eps'
 plt.savefig(destin, format='eps', dpi=1000)
 plt.show()
 """
@@ -160,7 +160,7 @@ for var in var_list:
     ax.set_title('Mean and median per-capita {0}'.format(var_list_dict[var]))
     ax.set_ylabel('\$000s')
     ax.legend(loc='upper left')
-    destin = '../figures/{0}mmAGE.eps'.format(var)
+    destin = '../main/figures/{0}mmAGE.eps'.format(var)
     plt.savefig(destin, format='eps', dpi=1000)
     plt.show()
 """
@@ -183,7 +183,7 @@ for var in var_list:
     ax.set_xlabel('Per-capita {0} quintiles'.format(var_list_dict[var]))
     ax.set_title('Average student debt')
     ax.set_ylabel('\$')
-    destin = '../figures/SDquintile{0}_all.eps'.format(var)
+    destin = '../main/figures/SDquintile{0}_all.eps'.format(var)
     plt.savefig(destin, format='eps', dpi=1000)
     plt.show()
     quintiles = np.array([scf_data_clean.quantile(data['percap_income'],data['wgt'], j/5) for j in range(6)])
@@ -207,7 +207,7 @@ for var in var_list:
     ax.set_title('Fraction of population')
     ax.legend()
     ax.set_ylim([0, 1])
-    destin = '../figures/percap_{0}_debt_count.eps'.format(var)
+    destin = '../main/figures/percap_{0}_debt_count.eps'.format(var)
     plt.savefig(destin, format='eps', dpi=1000)
     plt.show()
 """
@@ -250,7 +250,7 @@ for age_cat in range(num_age):
         ax.set_ylabel('\$')
         ax.legend()
         plt.ylim([0,60])
-        destin = '../figures/SD{0}{1}{2}.eps'.format(qctile_dict[num],var,age_cat)
+        destin = '../main/figures/SD{0}{1}{2}.eps'.format(qctile_dict[num],var,age_cat)
         plt.savefig(destin, format='eps', dpi=1000)
         plt.show()
 """
@@ -269,9 +269,9 @@ for var in ["income", "networth"]:
         for j in range(num):
             ax.bar(j+1, array_temp[j,i], 2*width, color=c2)
         plt.xticks(np.arange(1, num+1))
-        ax.set_xlabel('Per-capita {0} {1}s'.format(var,qctile_dict[num]))
+        ax.set_xlabel('Per-capita {0} {1}s'.format(var_list_dict[var],qctile_dict[num]))
         #ax.set_title('Up to \${0},000 forgiven'.format(int(cancel/10**3)))
         ax.set_ylabel('\$')
-        destin = '../figures/cancel{0}{1}{2}.eps'.format(var,qctile_dict[num],cancel)
+        destin = '../main/figures/cancel{0}{1}{2}.eps'.format(var,qctile_dict[num],cancel)
         plt.savefig(destin, format='eps', dpi=1000)
         plt.show()
