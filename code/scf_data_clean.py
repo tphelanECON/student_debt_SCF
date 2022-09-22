@@ -79,11 +79,11 @@ def quantile(data, weights, quantile):
         data = np.asarray(data)
     if not isinstance(weights, np.matrix):
         weights = np.asarray(weights)
-    ind_sorted = np.argsort(data)
+    ind_sorted = np.argsort(data) #argsort gets the indices that sort the given array
     sorted_weights = weights[ind_sorted]
     Sn = np.cumsum(sorted_weights)
     Pn = Sn/Sn[-1] #alternative: Pn = (Sn-0.5*sorted_weights)/Sn[-1]
-    return np.interp(quantile, Pn, data[ind_sorted])
+    return np.interp(quantile, Pn, data[ind_sorted]) #x, xp, fp
 slice_fun = {}
 slice_fun['Borrowers'] = lambda df: df[df['percap_all_loans']>0]
 slice_fun['All'] = lambda df: df
@@ -96,7 +96,7 @@ whom_list = ['x7978', 'x7883', 'x7888', 'x7893', 'x7898', 'x7993']
 #How much is still owed on this loan? 0=NA/Inappropriate, otherwise dollar amount
 bal_list = ['x7824', 'x7847', 'x7870', 'x7924', 'x7947', 'x7970']
 """
-Following suppresses a Python warning
+Following suppresses a Python warning about defining too many variables
 (taken from https://github.com/twopirllc/pandas-ta/issues/340)
 """
 from warnings import simplefilter
@@ -120,7 +120,7 @@ age_values = [25,30,35,40,45,50,55,60]
 data['age_cat'] = pd.cut(data['age'],bins=age_values,labels=range(len(age_values)-1))
 """
 Deciles and quintiles for networth and income for whole population and by age.
-Sometimes need duplicates='drop' as argumhent of pd.cut if qctiles not unique.
+Sometimes need duplicates='drop' as argument of pd.cut if qctiles not unique.
 """
 for var in ["income", "networth"]:
     for num in [10,5]:
@@ -129,7 +129,7 @@ for var in ["income", "networth"]:
         data[var+'_cat{0}'.format(num)] = pd.cut(data[var], bins=qctiles, labels=range(len(qctiles)-1))
         qctiles = np.array([quantile(data['percap_'+var], data['wgt'], j/num) for j in range(num+1)])
         data['percap_'+var+'_cat{0}'.format(num)] = pd.cut(data['percap_'+var], bins=qctiles, labels=range(len(qctiles)-1))
-        #ae-specific quantiles
+        #age-specific quantiles
         for age_cat in range(len(age_labels)):
             data_temp = data[data['age_cat']==age_cat]
             qctiles = np.array([quantile(data_temp[var], data_temp['wgt'], j/num) for j in range(num+1)])

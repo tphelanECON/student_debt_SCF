@@ -88,6 +88,22 @@ for var in var_list:
     destin = '../main/figures/SD{0}{1}.eps'.format(qctile_dict[num],var)
     plt.savefig(destin, format='eps', dpi=1000)
     plt.show()
+
+"""
+Print average income within quintiles
+gb = data.groupby('percap_'+'income'+'_cat{0}'.format(num))['percap_'+'income'].agg(f).values
+"""
+
+data_debt, num = data[data['percap_all_loans']>0], 5
+f = lambda x: np.average(x, weights=df_temp.loc[x.index, "wgt"])
+gb_debt_income = data_debt.groupby('percap_'+'income'+'_cat{0}'.format(num))['percap_'+'income'].agg(f).values
+gb_debt_debt = data_debt.groupby('percap_'+'income'+'_cat{0}'.format(num))['percap_'+'all_loans'].agg(f).values
+
+#print("Average income per income quintile among borrowers:", gb_debt_income)
+print("Ratio of highest quintile to lowest:", gb_debt_income[4]/gb_debt_income[0])
+#print("Average debt per income quintile among borrowers:", gb_debt_debt)
+print("Ratio of highest quintile to lowest:", gb_debt_debt[4]/gb_debt_debt[0])
+
 """
 Age
 """
@@ -117,6 +133,14 @@ DF = pd.DataFrame(array_temp.round(decimals=1),index=scf_data_clean.age_labels, 
 destin = '../main/figures/BvsNBage.tex'
 with open(destin,'w') as tf:
     tf.write(DF.style.to_latex(column_format='lcc'))
+"""
+Print average age
+"""
+print("Average age of households:", np.average(data["age"], weights=data["wgt"]))
+print("Median age of households:", quantile(data["age"], weights=data["wgt"], quantile=0.5))
+print("Average age of households with debt:", np.average(data_debt["age"], weights=data_debt["wgt"]))
+print("Median age of households with debt:", quantile(data_debt["age"], weights=data_debt["wgt"], quantile=0.5))
+
 """
 Aggregate debt by age group.
 """
