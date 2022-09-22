@@ -1,23 +1,5 @@
 """
-Load summary and full public datasets for SCF 2019 and construct variables.
-
-Summary dataset: https://www.federalreserve.gov/econres/files/scfp2019s.zip
-Full public dataset: https://www.federalreserve.gov/econres/files/scf2019s.zip
-
-Documentation links:
-
-    * Bulletin: https://www.federalreserve.gov/publications/files/scf20.pdf
-    * Summary macros: https://www.federalreserve.gov/econres/files/bulletin.macro.txt
-    * Codebook for 2019: https://www.federalreserve.gov/econres/files/codebk2019.txt
-
-REMINDERS:
-
-    * quantiles must be calculated here (before any conditioning by debt).
-    i.e. when we plot things like average debt among debtors per quintile of
-    the distribution of net worth, these are not quintiles of the debtor population
-    but rather quintiles of the whole population.
-
-In the Summary macros, "married" includes "living with partner".
+Download and create variables used in the Commentary.
 """
 import numpy as np
 import pandas as pd
@@ -29,7 +11,7 @@ from zipfile import ZipFile
 import requests, zipfile
 from urllib.request import urlopen
 """
-Make folder for figures if none exists
+Make folder for figures and data if none exists
 """
 if not os.path.exists('../main/figures'):
     os.makedirs('../main/figures')
