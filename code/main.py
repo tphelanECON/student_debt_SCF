@@ -1,10 +1,5 @@
 """
-The scripts creates all of the figures used in the Commentary.
-
-scf_data_clean downloads the data from the Board of Governors website, defines
-the relevant variables (income and networth quintiles etc).
-scf_lifetime_wealth performs the lifetime wealth calculations.
-scf_figures produces all of the figures. 
+create all of the figures used in the Commentary.
 """
 
 import os
