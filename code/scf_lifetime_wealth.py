@@ -91,7 +91,7 @@ def lifetime_wealth_SD(df,g,rf,end_date,num,show=0):
         else:
             ax.bar(i-width, df_SD['borrowers'].loc['LT_wealth',i], 2*width, color=c1)
             ax.bar(i+width, df_SD['all'].loc['LT_wealth',i], 2*width, color=c2)
-    ax.set_xlabel('Per-capita lifetime wealth {0}s ($r = ${1}%)'.format(qctile_dict[num],int(100*rf)))
+    ax.set_xlabel('Per capita lifetime wealth {0}s ($r = ${1}%)'.format(qctile_dict[num],int(100*rf)))
     ax.set_title('Average student debt')
     ax.set_ylabel('\$000s')
     ax.legend(loc='upper left')
@@ -100,6 +100,7 @@ def lifetime_wealth_SD(df,g,rf,end_date,num,show=0):
     plt.savefig(destin, format='eps', dpi=1000)
     if show == 1:
         plt.show()
+    plt.close()
 """
 Count of debtors by lifetime wealth quintile
 """
@@ -123,7 +124,7 @@ def lifetime_wealth_debt_count(df,g,rf,end_date,num,show=0):
                 ax.bar(i+1-((len(debt_list)-2)/2-j)*width,SD_debt_count[(i,j)]/norm,width,color=colorFader(c1,c2,j/(len(debt_list)-2)),label=debt_brackets[j])
             else:
                 ax.bar(i+1-((len(debt_list)-2)/2-j)*width,SD_debt_count[(i,j)]/norm,width,color=colorFader(c1,c2,j/(len(debt_list)-2)))
-    ax.set_xlabel('Per-capita lifetime wealth {0}s ($r = ${1}%)'.format(qctile_dict[num],int(100*rf)))
+    ax.set_xlabel('Per capita lifetime wealth {0}s ($r = ${1}%)'.format(qctile_dict[num],int(100*rf)))
     ax.set_title('Fraction of population')
     ax.legend()
     ax.set_ylim([0, 1])
@@ -131,6 +132,7 @@ def lifetime_wealth_debt_count(df,g,rf,end_date,num,show=0):
     plt.savefig(destin, format='eps', dpi=1000)
     if show == 1:
         plt.show()
+    plt.close()
 
 def cancellation_lifetime_wealth(df,g,rf,end_date,num,show=0):
     df = lifetime_wealth_qctiles(df,g,rf,end_date,num)
@@ -145,13 +147,14 @@ def cancellation_lifetime_wealth(df,g,rf,end_date,num,show=0):
         for j in range(num):
             ax.bar(j+1, array_temp[j,i], 2*width, color=c2)
         plt.xticks(np.arange(1, num+1))
-        ax.set_xlabel('Per-capita lifetime wealth {0}s ($r = ${1}%)'.format(qctile_dict[num],int(100*rf)))
+        ax.set_xlabel('Per capita lifetime wealth {0}s ($r = ${1}%)'.format(qctile_dict[num],int(100*rf)))
         ax.set_ylabel('\$')
         ax.set_title('Up to \${0},000 forgiven'.format(int(cancel/10**3)))
         destin = '../main/figures/cancellifetime_wealth{0}{1}{2}{3}.eps'.format(qctile_dict[num],cancel,int(100*g),int(100*rf))
         plt.savefig(destin, format='eps', dpi=1000)
         if show == 1:
             plt.show()
+    plt.close()
 
 g_list, rf_list = [0], [0.04,0.07,0.1]
 end_date = 80
@@ -161,6 +164,6 @@ for g in g_list:
         print("Computing plots for (g,rf) = ", (g,rf))
         plt.rcParams.update({'figure.max_open_warning': 0})
         pd.set_option('mode.chained_assignment', None)
-        lifetime_wealth_SD(data,g,rf,end_date,num,show=1)
-        lifetime_wealth_debt_count(data,g,rf,end_date,num,show=1)
-        cancellation_lifetime_wealth(data,g,rf,end_date,num,show=1)
+        lifetime_wealth_SD(data,g,rf,end_date,num,show=0)
+        lifetime_wealth_debt_count(data,g,rf,end_date,num,show=0)
+        cancellation_lifetime_wealth(data,g,rf,end_date,num,show=0)

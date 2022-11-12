@@ -48,8 +48,8 @@ data = p19i6.join(rscfp2019, how='inner')
 """
 Debt lists and debt brackets, and two functions for convenience
 """
-debt_list = [0,0.001, 1.5*10**4, 4*10**4, np.inf]
-debt_brackets = ["No debt","\$0-\$15,000", "\$15,000-\$40,000", "\$40,000+"]
+debt_list = [0,1, 1.5*10**4, 4*10**4, np.inf]
+debt_brackets = ["No debt","\$1-\$15,000", "\$15,001-\$40,000", "\$40,001+"]
 
 c1,c2='lightsteelblue','darkblue'
 def colorFader(c1,c2,mix):

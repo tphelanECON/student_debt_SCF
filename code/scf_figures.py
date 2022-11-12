@@ -19,6 +19,10 @@ debt_list = scf_data_clean.debt_list
 debt_brackets = scf_data_clean.debt_brackets
 quantile = scf_data_clean.quantile
 """
+Dummy for whether or not to show the figures
+"""
+show=0
+"""
 Income and networth percentiles.
 """
 num, var_list_dict = 10, {'income':'income','networth':'net worth','all_loans':'student debt'}
@@ -38,13 +42,17 @@ for var in ['income','networth']:
             ax.bar(i-width, array_temp[i,0]/10**3, 2*width, color=c1)
             ax.bar(i+width, array_temp[i,1]/10**3, 2*width, color=c2)
     plt.xticks(range(1,num,2), (100/num)*np.arange(1,num,2))
+    #plt.figtext(0.1, 0, 'Source: 2019 SCF and authors\' calculations.', horizontalalignment='left')
     ax.set_xlabel('Percentile')
-    ax.set_title('Per-capita {0} percentiles'.format(var_list_dict[var]))
+    ax.set_title('Per capita {0} percentiles'.format(var_list_dict[var]))
     ax.set_ylabel('\$000s')
     ax.legend()
     destin = '../main/figures/BvsNB{0}.eps'.format(var)
     plt.savefig(destin, format='eps', dpi=1000)
-    plt.show()
+    if show == 1:
+        plt.show()
+    plt.close()
+
 """
 Average student debt by per-capita income and net worth for borrowers and non-borrowers.
 """
@@ -78,13 +86,15 @@ for var in var_list:
         else:
             ax.bar(i-width, df_SD['borrowers'].loc[var,i], 2*width, color=c1)
             ax.bar(i+width, df_SD['all'].loc[var,i], 2*width, color=c2)
-    ax.set_xlabel('Per-capita {0} {1}s'.format(var_list_dict[var],qctile_dict[num]))
+    ax.set_xlabel('Per capita {0} {1}s'.format(var_list_dict[var],qctile_dict[num]))
     ax.set_title('Average student debt')
     ax.set_ylabel('\$000s')
     ax.legend()
     destin = '../main/figures/SD{0}{1}.eps'.format(qctile_dict[num],var)
     plt.savefig(destin, format='eps', dpi=1000)
-    plt.show()
+    if show == 1:
+        plt.show()
+    plt.close()
 """
 Print average income within quintiles
 gb = data.groupby('percap_'+'income'+'_cat{0}'.format(num))['percap_'+'income'].agg(f).values
@@ -133,7 +143,9 @@ for var in var_list:
     ax.legend(loc='upper left')
     destin = '../main/figures/{0}mmAGE.eps'.format(var)
     plt.savefig(destin, format='eps', dpi=1000)
-    plt.show()
+    if show == 1:
+        plt.show()
+    plt.close()
 """
 Average debt by quintiles of income and net worth, fraction of borrowers in each bin.
 """
@@ -163,13 +175,15 @@ for var in var_list:
                 ax.bar(i+1-((len(debt_list)-2)/2-j)*width,SD_debt_count[(i,j)]/norm,width,color=colorFader(c1,c2,j/(len(debt_list)-2)),label=debt_brackets[j])
             else:
                 ax.bar(i+1-((len(debt_list)-2)/2-j)*width,SD_debt_count[(i,j)]/norm,width,color=colorFader(c1,c2,j/(len(debt_list)-2)))
-    ax.set_xlabel('Per-capita {0} quintile'.format('income'))
+    ax.set_xlabel('Per capita {0} quintile'.format('income'))
     ax.set_title('Fraction of population')
     ax.legend()
     ax.set_ylim([0, 1])
     destin = '../main/figures/percap_{0}_debt_count.eps'.format(var)
     plt.savefig(destin, format='eps', dpi=1000)
-    plt.show()
+    if show == 1:
+        plt.show()
+    plt.close()
 """
 Cancellation values broken down by income and networth distributions.
 """
@@ -186,9 +200,11 @@ for var in ["income", "networth"]:
         for j in range(num):
             ax.bar(j+1, array_temp[j,i], 2*width, color=c2)
         plt.xticks(np.arange(1, num+1))
-        ax.set_xlabel('Per-capita {0} {1}s'.format(var_list_dict[var],qctile_dict[num]))
+        ax.set_xlabel('Per capita {0} {1}s'.format(var_list_dict[var],qctile_dict[num]))
         ax.set_title('Up to \${0},000 forgiven'.format(int(cancel/10**3)))
         ax.set_ylabel('\$')
         destin = '../main/figures/cancel{0}{1}{2}.eps'.format(var,qctile_dict[num],cancel)
         plt.savefig(destin, format='eps', dpi=1000)
-        plt.show()
+        if show == 1:
+            plt.show()
+    plt.close()
