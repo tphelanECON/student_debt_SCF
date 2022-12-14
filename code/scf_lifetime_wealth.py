@@ -118,6 +118,7 @@ def lifetime_wealth_debt_count(df,g,rf,end_date,num,show=0):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     for i in range(len(qctiles)-1):
+        #sum debtors in each quintile to reach 1
         norm = sum([SD_debt_count[(i,j)] for j in range(len(debt_list)-1)])
         for j in range(len(debt_list)-1):
             if i==0:

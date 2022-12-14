@@ -52,7 +52,6 @@ for var in ['income','networth']:
     if show == 1:
         plt.show()
     plt.close()
-
 """
 Average student debt by per-capita income and net worth for borrowers and non-borrowers.
 """
@@ -147,10 +146,10 @@ for var in var_list:
         plt.show()
     plt.close()
 """
-Average debt by quintiles of income and net worth, fraction of borrowers in each bin.
+Average debt by quintiles of income, and fraction of borrowers in each bin.
 """
 num, df_SD_quintiles = 5, {}
-var_list = ['income','networth']
+var_list = ['income']
 var_list_dict = {'income':'income','networth':'net worth'}
 df_SD_quintiles = pd.DataFrame(columns=range(1,num+1), index=var_list)
 for i in range(len(var_list)):
@@ -158,17 +157,17 @@ for i in range(len(var_list)):
     gb = data.groupby('percap_'+var_list[i]+'_cat{0}'.format(num))['percap_'+'all_loans'].agg(f).values
     df_SD_quintiles.loc[var_list[i],:] = gb
 for var in var_list:
-    quintiles = np.array([scf_data_clean.quantile(data['percap_income'],data['wgt'], j/5) for j in range(6)])
-    qct_lists, var_names = [quintiles,debt_list],['percap_income','percap_all_loans']
+    quintiles = np.array([scf_data_clean.quantile(data['percap_{0}'.format(var)],data['wgt'], j/5) for j in range(6)])
+    qct_lists, var_names = [quintiles,debt_list],['percap_{0}'.format(var),'percap_all_loans']
     d = [pd.cut(data[var_names[i]], bins=qct_lists[i],labels=range(len(qct_lists[i])-1),include_lowest=True,duplicates='drop') for i in range(2)]
     data['pairs'] = list(zip(d[0], d[1]))
-    func = lambda x: np.sum(x*data.loc[x.index, "wgt"])
     SD_debt = data.groupby(data['pairs'])['percap_all_loans']
     SD_debt_count = data.groupby(data['pairs'])['wgt'].sum()
     width = 1/5
     fig = plt.figure()
     ax = fig.add_subplot(111)
     for i in range(len(quintiles)-1):
+        #for each quintile normalize so that sum is 1
         norm = sum([SD_debt_count[(i,j)] for j in range(len(debt_list)-1)])
         for j in range(len(debt_list)-1):
             if i==0:
@@ -187,6 +186,7 @@ for var in var_list:
 """
 Cancellation values broken down by income and networth distributions.
 """
+df = data
 f = lambda x: np.average(x, weights=data.loc[x.index, "wgt"])
 num = 5
 for var in ["income", "networth"]:

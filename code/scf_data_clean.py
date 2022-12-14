@@ -62,7 +62,7 @@ def quantile(data, weights, quantile):
     if not isinstance(weights, np.matrix):
         weights = np.asarray(weights)
     ind_sorted = np.argsort(data) #argsort gets the indices that sort the given array
-    sorted_weights = weights[ind_sorted]
+    sorted_weights = weights[ind_sorted] #think of this as effectively the definition of argsort
     Sn = np.cumsum(sorted_weights)
     Pn = Sn/Sn[-1] #alternative: Pn = (Sn-0.5*sorted_weights)/Sn[-1]
     return np.interp(quantile, Pn, data[ind_sorted]) #x, xp, fp
@@ -117,7 +117,7 @@ for var in ["income", "networth"]:
             qctiles = np.array([quantile(data_temp[var], data_temp['wgt'], j/num) for j in range(num+1)])
             data[var+'_cat{0}{1}'.format(num,age_cat)] = pd.cut(data_temp[var], bins=qctiles, labels=range(len(qctiles)-1))
             qctiles = np.array([quantile(data_temp['percap_'+var], data_temp['wgt'], j/num) for j in range(num+1)])
-            data['percap_' + var + '_cat{0}{1}'.format(num,age_cat)] = pd.cut(data_temp['percap_'+var],bins=qctiles,labels=range(len(qctiles)-1))
+            data['percap_'+var+'_cat{0}{1}'.format(num,age_cat)] = pd.cut(data_temp['percap_'+var],bins=qctiles,labels=range(len(qctiles)-1))
 """
 Cancelled quantities
 """
