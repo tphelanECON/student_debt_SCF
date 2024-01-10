@@ -1,5 +1,5 @@
 Replication materials for 
 
-Manes, Jordan, Emily Moschini, and Tom Phelan. “Student Debt Incidence: Recent Data and Conceptual Issues .” Federal Reserve Bank of Cleveland, Economic Commentary 2022-16. https://doi.org/10.26509/frbc-ec-202216
+Manes, Jordan, Emily Moschini, and Tom Phelan. “Student Debt Incidence: Recent Data and Conceptual Issues.” Federal Reserve Bank of Cleveland, Economic Commentary 2022-16. https://doi.org/10.26509/frbc-ec-202216
 
-NOTE: with each iteration of the SCF, the summary datasets for previous surveys are adjusted so as to be in current dollars. E.g., as of October 2023, the 2019 survey (found here: https://www.federalreserve.gov/econres/scf_2019.htm) is in 2022 dollars. Consequently, if one wishes to use the above code to replicate all of the figures in the paper, one must adjust for inflation.
+NOTE: the Commentary and code was updated in January 2024 to correct an error in the figures relating to lifetime wealth. The correction does not change the conclusions of the authors and the text accompanying the figures has not ben altered. 
