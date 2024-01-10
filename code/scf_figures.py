@@ -18,13 +18,17 @@ colorFader = scf_data_clean.colorFader
 debt_list = scf_data_clean.debt_list
 debt_brackets = scf_data_clean.debt_brackets
 quantile = scf_data_clean.quantile
+
 """
 Dummy for whether or not to show the figures
 """
+
 show=0
+
 """
 Income and networth percentiles.
 """
+
 num, var_list_dict = 10, {'income':'income','networth':'net worth','all_loans':'student debt'}
 for var in ['income','networth']:
     array_temp = np.zeros((num+1,2))
@@ -52,9 +56,15 @@ for var in ['income','networth']:
     if show == 1:
         plt.show()
     plt.close()
+
 """
 Average student debt by per-capita income and net worth for borrowers and non-borrowers.
 """
+
+"""
+Create dataframes giving the average per-capita student debt
+"""
+
 var_list = ['income','networth']
 var_list_dict = {'income':'income','networth':'net worth'}
 num, df_SD = 5, {}
@@ -74,6 +84,11 @@ for var2 in ['borrowers','all']:
         else:
             df_SD[var2].loc[var_list[i],:] = gb
     df_SD[var2] = (df_SD[var2]/1000).astype(float).round(1)
+
+"""
+Create the figures
+"""
+
 for var in var_list:
     width = 1/5
     fig = plt.figure()
@@ -86,7 +101,7 @@ for var in var_list:
             ax.bar(i-width, df_SD['borrowers'].loc[var,i], 2*width, color=c1)
             ax.bar(i+width, df_SD['all'].loc[var,i], 2*width, color=c2)
     ax.set_xlabel('Per capita {0} {1}s'.format(var_list_dict[var],qctile_dict[num]))
-    ax.set_title('Average student debt')
+    ax.set_title('Average per-capita student debt')
     ax.set_ylabel('\$000s')
     ax.legend()
     destin = '../main/figures/SD{0}{1}.eps'.format(qctile_dict[num],var)
@@ -94,29 +109,37 @@ for var in var_list:
     if show == 1:
         plt.show()
     plt.close()
+
 """
-Print average income within quintiles
-gb = data.groupby('percap_'+'income'+'_cat{0}'.format(num))['percap_'+'income'].agg(f).values
+Print average income within quintiles (to justify statements made in the text
+that average per-capita income ratios).
 """
+
 data_debt, num = data[data['percap_all_loans']>0], 5
 f = lambda x: np.average(x, weights=df_temp.loc[x.index, "wgt"])
 gb_debt_income = data_debt.groupby('percap_'+'income'+'_cat{0}'.format(num))['percap_'+'income'].agg(f).values
 gb_debt_debt = data_debt.groupby('percap_'+'income'+'_cat{0}'.format(num))['percap_'+'all_loans'].agg(f).values
+
 """
 Ratios of income and student debt across quintiles
 """
-print("Ratio of highest quintile to lowest (income):", gb_debt_income[4]/gb_debt_income[0])
-print("Ratio of highest quintile to lowest (student debt):", gb_debt_debt[4]/gb_debt_debt[0])
+
+print("Ratio of highest quintile to lowest (per-capita income):", gb_debt_income[4]/gb_debt_income[0])
+print("Ratio of highest quintile to lowest (per-capita student debt):", gb_debt_debt[4]/gb_debt_debt[0])
+
 """
-Print average and median age for both borrowers and non-borrowers
+Print average and median age for both borrowers and non-borrowers (mentioned in text)
 """
+
 print("Average age of households:", np.average(data["age"], weights=data["wgt"]))
 print("Median age of households:", quantile(data["age"], weights=data["wgt"], quantile=0.5))
 print("Average age of households with debt:", np.average(data_debt["age"], weights=data_debt["wgt"]))
 print("Median age of households with debt:", quantile(data_debt["age"], weights=data_debt["wgt"], quantile=0.5))
+
 """
 Mean and median per-capita income and networth by age group.
 """
+
 df = data
 var_list = ['income','networth']
 var_list_dict = {'income':'income','networth':'net worth'}
@@ -145,9 +168,11 @@ for var in var_list:
     if show == 1:
         plt.show()
     plt.close()
+
 """
-Average debt by quintiles of income, and fraction of borrowers in each bin.
+Average debt by quintiles of income, and fraction of households in each bin.
 """
+
 num, df_SD_quintiles = 5, {}
 var_list = ['income']
 var_list_dict = {'income':'income','networth':'net worth'}
@@ -156,6 +181,11 @@ for i in range(len(var_list)):
     f = lambda x: np.average(x, weights=data.loc[x.index, "wgt"])
     gb = data.groupby('percap_'+var_list[i]+'_cat{0}'.format(num))['percap_'+'all_loans'].agg(f).values
     df_SD_quintiles.loc[var_list[i],:] = gb
+
+"""
+Now create the figures for the fraction of households within each bin.
+"""
+
 for var in var_list:
     quintiles = np.array([scf_data_clean.quantile(data['percap_{0}'.format(var)],data['wgt'], j/5) for j in range(6)])
     qct_lists, var_names = [quintiles,debt_list],['percap_{0}'.format(var),'percap_all_loans']
@@ -183,9 +213,11 @@ for var in var_list:
     if show == 1:
         plt.show()
     plt.close()
+
 """
 Cancellation values broken down by income and networth distributions.
 """
+
 df = data
 f = lambda x: np.average(x, weights=data.loc[x.index, "wgt"])
 num = 5

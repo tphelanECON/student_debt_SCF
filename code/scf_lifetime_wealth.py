@@ -7,9 +7,11 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import time, datetime, pyreadstat, sys
 import scf_data_clean, itertools
+
 """
 Obtain data from scf_data_clean.
 """
+
 data = scf_data_clean.data
 age_labels, age_values = scf_data_clean.age_labels, scf_data_clean.age_values
 slice_fun = scf_data_clean.slice_fun
@@ -22,6 +24,7 @@ debt_brackets = scf_data_clean.debt_brackets
 Lifetime wealth function. Takes dataframe, aggregate growth rate (zero in Commentary),
 discount rate (rf=0.04 in Commentary) and end date for one's life (80 in Commentary).
 """
+
 def lifetime_wealth(df,g,rf,end_date):
     #create series for current income, per-capita income and discounted income.
     df['income0'] = df['income']
@@ -30,17 +33,20 @@ def lifetime_wealth(df,g,rf,end_date):
     #create median incomes for each age group.
     I_med = df.groupby(df['age_cat'])['income'].agg(lambda x: scf_data_clean.quantile(x,df.loc[x.index,"wgt"],0.5)).values
     #specify assumed growth rates of income.
-    grow = np.append(np.log(I_med[1:]/I_med[:-1])/5 + g, g)
+    lifecycle_grow = np.log(I_med[1:]/I_med[:-1])/5 + g
+    grow = np.append(lifecycle_grow, lifecycle_grow[-1])
     #create dictionary mapping age groups to growth rates.
     grow_dict = dict(zip(range(len(age_labels)),list(grow)))
     #construct future income and per-capita income and discount.
     for t in range(end_date-1):
         #get growth between t and t+1 by applying grow_dict to age categorical.
         gr = pd.cut(df['age']+t,bins=age_values,labels=range(len(age_values)-1)).map(grow_dict)
-        #compute next year income and discounted income if alive.
-        df['income{0}'.format(t+1)] = (df['age']+t+1<=end_date)*df['income{0}'.format(t)]*np.exp(gr.astype(float))
+        #compute next year income and discounted income if alive. applies income
+        #growth to percap income. Amounts to assuming people stay together forever.
         df['percap_income{0}'.format(t+1)] = (df['age']+t+1<=end_date)*df['percap_income{0}'.format(t)]*np.exp(gr.astype(float))
         df['percap_income{0}disc'.format(t+1)] = np.exp(-rf*(t+1))*df['percap_income{0}'.format(t+1)]
+    #note that some of the above will return NaNs (due to overflow of age), but
+    #these are (correctly) ignored when we use the axis sum in the following:
     df['percap_LT_income'] = df[['percap_income{0}disc'.format(t) for t in range(end_date)]].sum(axis=1)
     return df['percap_LT_income'] + df['percap_networth']
 """
@@ -50,15 +56,9 @@ using above lifetime_wealth function and computes categorical variables.
 def lifetime_wealth_qctiles(df,g,rf,end_date,num):
     df['percap_'+'LT_wealth'] = lifetime_wealth(df,g,rf,end_date)
     for num in [10,5]:
-        #whole population
+        #whole population (no age group-specific results)
         qctiles = np.array([scf_data_clean.quantile(df['percap_'+'LT_wealth'], df['wgt'], j/num) for j in range(num+1)])
         df['percap_'+'LT_wealth'+'_cat{0}'.format(num)] = pd.cut(df['percap_'+'LT_wealth'],bins=qctiles,labels=range(len(qctiles)-1),include_lowest=True, duplicates='drop')
-        #now each age group
-        for age_cat in range(len(age_labels)):
-            df_temp = df[df['age_cat']==age_cat]
-            qctiles = np.array([scf_data_clean.quantile(df_temp['percap_'+'LT_wealth'], df_temp['wgt'], j/num) for j in range(num+1)])
-            #add additional suffix for age category
-            df['percap_'+'LT_wealth'+'_cat{0}{1}'.format(num,age_cat)] = pd.cut(df_temp['percap_'+'LT_wealth'],bins=qctiles,labels=range(len(qctiles)-1),include_lowest=True, duplicates='drop')
     return df
 """
 Average student debt by lifetime wealth qctiles. Takes dataframe and parameters
@@ -92,10 +92,10 @@ def lifetime_wealth_SD(df,g,rf,end_date,num,show=0):
             ax.bar(i-width, df_SD['borrowers'].loc['LT_wealth',i], 2*width, color=c1)
             ax.bar(i+width, df_SD['all'].loc['LT_wealth',i], 2*width, color=c2)
     ax.set_xlabel('Per capita lifetime wealth {0}s ($r = ${1}%)'.format(qctile_dict[num],int(100*rf)))
-    ax.set_title('Average student debt')
+    ax.set_title('Average per-capita student debt')
     ax.set_ylabel('\$000s')
     ax.legend(loc='upper left')
-    plt.ylim([0,45])
+    plt.ylim([0,35])
     destin = '../main/figures/SD{0}lifetime_wealth{1}{2}.eps'.format(qctile_dict[num],int(100*g),int(100*rf))
     plt.savefig(destin, format='eps', dpi=1000)
     if show == 1:
@@ -156,6 +156,10 @@ def cancellation_lifetime_wealth(df,g,rf,end_date,num,show=0):
         if show == 1:
             plt.show()
     plt.close()
+
+"""
+Growth levels and interest rates
+"""
 
 g_list, rf_list = [0], [0.04,0.07,0.1]
 end_date = 80
